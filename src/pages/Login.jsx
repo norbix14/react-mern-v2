@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useMemo, useEffect, useState } from 'react'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 
 import {
 	Input,
@@ -9,7 +9,8 @@ import {
 
 import {
 	useHandlerInputChange,
-	useLocalStorage
+	useLocalStorage,
+	useAuth
 } from '../hooks'
 
 import {
@@ -30,9 +31,13 @@ const Login = () => {
 		error: false,
 		message: '',
 	})
+	const [ logNow, setLogNow ] = useState(false)
 	const [ values, handleChange, reset ] = useHandlerInputChange(initialState)
 	const [ user, setUser ] = useLocalStorage('user', {})
 	const [ token, setToken ] = useLocalStorage('token', '')
+	const { authData, loading, setAuthData } = useAuth()
+	const navigateTo = useNavigate()
+	const timer = 3000
 	const inputs = useMemo(() => {
 		return [
 			{
@@ -77,24 +82,30 @@ const Login = () => {
 				})
 			} else {
 				const { data } = result
-				const { msg, token, user } = data
-				setUserLogged(true)
-				setAlertData({
-					error: false,
-					message: `Welcome ${user.name}!`,
-				})
-				setToken(token)
-				setUser({
+				const { token, user } = data
+				const userData = {
 					_id: user._id,
 					name: user.name,
 					email: user.email,
 					createdAt: new Date(user.createdAt).getTime(),
 					updatedAt: new Date(user.updatedAt).getTime(),
+				}
+				setUserLogged(true)
+				setAlertData({
+					error: false,
+					message: `Welcome ${userData.name}!`,
+				})
+				setToken(token)
+				setUser(userData)
+				setAuthData({
+					logged: true,
+					token,
+					user: userData,
 				})
 				reset()
 				setTimeout(() => {
-					alert('REDIRIGIR A LOS PROYECTOS')
-				}, 2000)
+					setLogNow(true)
+				}, timer)
 			}
 		} catch (error) {
 			setAlertData({
@@ -105,60 +116,78 @@ const Login = () => {
 			setBtnDisabled(false)
 		}
 	}
-	return (
-		<>
-			<h1 className="text-sky-600 font-black text-6xl capitalize">
-				Log in and check your {' '}
-				<span className="text-slate-700">projects</span>
-			</h1>
-			<form
-				className="my-10 bg-white shadow rounded-lg p-10"
-				onSubmit={handleSubmit}
-			>
-				{
-					inputs.map(({ id, label, type, placeholder, key }) => (
-						<Input
-							key={key}
-							id={id}
-							label={label}
-							type={type}
-							placeholder={placeholder}
-							value={values[id]}
-							onChange={handleChange}
-							disabled={userLogged}
-						/>
-					))
-				}
-				{
-					!userLogged ? (
-						<InputSubmit
-							value="login"
-							disabled={btnDisabled}
-						/>
-					) : (
+	useEffect(() => {
+		if (authData.logged) {
+			setUserLogged(true)
+			if (!alertData.message.startsWith('Welcome')) {
+				setAlertData({
+					error: false,
+					message: `You are already logged. Redirecting...`,
+				})
+				setTimeout(() => setLogNow(true), timer)
+			}
+		}
+	}, [authData.logged])
+	return loading ? (
+		<h2 className="text-center">Loading...</h2>
+	) : (
+		(authData.logged && logNow) ? (
+			<Navigate to="/projects" />
+		) : (
+			<>
+				<h1 className="text-sky-600 font-black text-6xl capitalize">
+					Log in and check your {' '}
+					<span className="text-slate-700">projects</span>
+				</h1>
+				<form
+					className="my-10 bg-white shadow rounded-lg p-10"
+					onSubmit={handleSubmit}
+				>
+					{
+						inputs.map(({ id, label, type, placeholder, key }) => (
+							<Input
+								key={key}
+								id={id}
+								label={label}
+								type={type}
+								placeholder={placeholder}
+								value={values[id]}
+								onChange={handleChange}
+								disabled={userLogged}
+							/>
+						))
+					}
+					{
+						!userLogged ? (
+							<InputSubmit
+								value="login"
+								disabled={btnDisabled}
+							/>
+						) : (
+							<AlertMessage
+								alert={alertData}
+							/>
+						)
+					}
+					{
+						alertData.error &&
 						<AlertMessage
 							alert={alertData}
 						/>
-					)
-				}
-				{
-					alertData.error &&
-					<AlertMessage
-						alert={alertData}
-					/>
-				}
-			</form>
-			<nav className="lg:flex lg:justify-between">
-				<Link
-					className="block text-center my-5 text-slate-700 uppercase text-sm"
-					to="/register"
-				>¿do not have and account? register one</Link>
-				<Link
-					className="block text-center my-5 text-slate-700 uppercase text-sm"
-					to="/forgotpassword"
-				>i forgot my password</Link>
-			</nav>
-		</>
+					}
+				</form>
+				<nav className="lg:flex lg:justify-between">
+					<Link
+						className="block text-center my-5 text-slate-700 uppercase text-sm"
+						to="/register"
+					>¿do not have and account? register one</Link>
+					<Link
+						className="block text-center my-5 text-slate-700 uppercase text-sm"
+						to="/forgotpassword"
+					>i forgot my password</Link>
+				</nav>
+			</>
+		)
 	)
 }
 

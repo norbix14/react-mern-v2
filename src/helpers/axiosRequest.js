@@ -6,12 +6,14 @@ const axiosRequest = async (data = { url, method, data }) => {
 		baseURL,
 		timeout: 10000,
 	})
-	const token = localStorage.getItem('token') || ''
+	const tokenFromStorage = window.localStorage.getItem('token')
+	const token = tokenFromStorage === null ? '' : JSON.parse(tokenFromStorage)
 	const axiosConfig = {
 		url: data.url,
 		method: data.method || 'GET',
 		data: data.data || {},
 		headers: {
+			'Content-Type': 'application/json',
 			Authorization: `Bearer ${token}`,
 		},
 	}
