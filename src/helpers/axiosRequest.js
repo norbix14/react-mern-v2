@@ -5,6 +5,10 @@ import axios from 'axios'
  * 
  * @param {object} data - options fot the axios request.
  * 
+ * @param {string} data.url - url to make the request to.
+ * @param {string} data.method - method to use for the request.
+ * @param {object} data.data - data to send with the request.
+ * 
  * @returns {Promise} an array with the result of the request and the error if any.
  * 
  * @example
