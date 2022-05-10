@@ -10,6 +10,10 @@ const Projects = () => {
   const [projectError, setProjectError] = useState(false)
   const { projects, setProjects } = useProjects()
   useEffect(() => {
+    /*
+      TODO: optimizar llamado a la API.
+      * puede hacerse desde la API modificando el query.
+    */
     const getAllProjects = async () => {
       const [result, error] = await axiosRequest({
         url: '/projects/all',

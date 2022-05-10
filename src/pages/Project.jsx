@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 
 import { timeAgo, prettyDate, axiosRequest } from '../helpers'
 import { useProjects } from '../hooks'
-import { AlertMessage } from './components'
+import { AlertMessage, Spinner } from './components'
 
 const Project = () => {
   const { id } = useParams()
@@ -32,7 +32,7 @@ const Project = () => {
       getAllProjects(id)
     }
     setLoading(false)
-  })
+  }, [])
   return (
     <>
       {projectError ? (
@@ -40,16 +40,23 @@ const Project = () => {
           alert={{ error: true, message: 'Something bad happened' }}
         />
       ) : loading ? (
-        <p>cargando...</p>
+        <Spinner />
       ) : (
         <>
-          <p>Project #{id}</p>
-          <p>
-            Created {timeAgo(new Date(project.createdAt).getTime() || 0, 'en')}
-          </p>
-          <p>
-            Date of creation: {prettyDate(new Date(project.createdAt).getTime() || 0)}
-          </p>
+          <div className="p-4 bg-white rounded-lg shadow-m mb-2">
+            <p>Project #{id}</p>
+            <p>
+              Created{' '}
+              {timeAgo(new Date(project.createdAt).getTime() || 0, 'en')}
+            </p>
+            <p>
+              Date of creation:{' '}
+              {prettyDate(new Date(project.createdAt).getTime() || 0)}
+            </p>
+          </div>
+          <div>
+            <h2 className="font-black text-4xl">{project.name}</h2>
+          </div>
         </>
       )}
     </>
