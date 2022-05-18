@@ -13,8 +13,9 @@ import {
   NewPassword,
   AccountConfirmation,
   Projects,
-  CreateProject,
   Project,
+  CreateProject,
+  EditProject,
 } from './pages'
 
 function App() {
@@ -32,8 +33,9 @@ function App() {
             </Route>
             <Route path="/projects" element={<RouteProtected />}>
               <Route index element={<Projects />} />
-              <Route path="create" element={<CreateProject />} />
               <Route path=":id" element={<Project />} />
+              <Route path="create" element={<CreateProject />} />
+              <Route path="edit/:id" element={<EditProject />} />
             </Route>
           </Routes>
         </ProjectsProvider>

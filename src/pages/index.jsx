@@ -4,8 +4,9 @@ import ForgotPassword from './ForgotPassword'
 import NewPassword from './NewPassword'
 import AccountConfirmation from './AccountConfirmation'
 import Projects from './Projects'
-import CreateProject from './CreateProject'
 import Project from './Project'
+import CreateProject from './CreateProject'
+import EditProject from './EditProject'
 
 export {
   Login,
@@ -14,6 +15,7 @@ export {
   NewPassword,
   AccountConfirmation,
   Projects,
-  CreateProject,
   Project,
+  CreateProject,
+  EditProject,
 }

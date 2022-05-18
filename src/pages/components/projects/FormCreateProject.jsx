@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import { useMemo, useState, useEffect } from 'react'
 
 import Input from '../Input'
@@ -9,18 +10,26 @@ import { useHandlerInputChange, useProjects } from '../../../hooks'
 
 import { axiosRequest, isAnyEmptyValue } from '../../../helpers'
 
-const FormCreateProject = () => {
-  const initialStateForm = {
+const FormCreateProject = ({ project = {}, edit = false }) => {
+  const emptyState = {
     name: '',
     description: '',
     timeline: '',
     client: '',
   }
+  const initialStateForm =
+    Object.keys(project).length > 0
+      ? { ...project, timeline: project.timeline.split('T')[0] }
+      : emptyState
   const initialStateAlert = {
     error: false,
     message: '',
   }
-  const [values, handleChange, reset] = useHandlerInputChange(initialStateForm)
+  const {
+    0: values,
+    1: handleChange,
+    3: setValues,
+  } = useHandlerInputChange(initialStateForm)
   const [alertData, setAlertData] = useState(initialStateAlert)
   const [projectCreated, setProjectCreated] = useState(false)
   const [btnDisabled, setBtnDisabled] = useState(false)
@@ -55,12 +64,26 @@ const FormCreateProject = () => {
     e.preventDefault()
     setBtnDisabled(true)
     try {
-      if (isAnyEmptyValue(values)) {
+      let url, method
+      const fieldsToCheck = {
+        name: values.name,
+        description: values.description,
+        timeline: values.timeline,
+        client: values.client,
+      }
+      if (isAnyEmptyValue(fieldsToCheck)) {
         throw new Error('All fields are required')
       }
+      if (edit) {
+        url = `/projects/update/${values._id}`
+        method = 'PUT'
+      } else {
+        url = '/projects/create'
+        method = 'POST'
+      }
       const [result, error] = await axiosRequest({
-        url: '/projects/create',
-        method: 'POST',
+        url,
+        method,
         data: {
           ...values,
           timeline: new Date(values.timeline),
@@ -72,23 +95,22 @@ const FormCreateProject = () => {
         const {
           data: { msg, project },
         } = result
-        reset()
+        setValues(emptyState)
         setAlertData({
           error: false,
           message: msg,
         })
         setProjectCreated(true)
         setProjects((prev) => {
-          return [
-            ...prev,
-            {
-              ...project,
-            },
-          ]
+          let res = []
+          if (edit) {
+            res = prev.map((p) => (p._id === project._id ? project : p))
+          } else {
+            res = [...prev, { ...project }]
+          }
+          return res
         })
-        alertTimeout = setTimeout(() => {
-          setProjectCreated(false)
-        }, 4000)
+        alertTimeout = setTimeout(() => setProjectCreated(false), 4000)
       }
     } catch (error) {
       setAlertData({
@@ -131,12 +153,20 @@ const FormCreateProject = () => {
           value={values.description}
           onChange={handleChange}
         />
-        <InputSubmit value="Create" disabled={btnDisabled} />
+        <InputSubmit
+          value={edit ? 'update' : 'create'}
+          disabled={btnDisabled}
+        />
         {projectCreated && <AlertMessage alert={alertData} />}
         {alertData.error && <AlertMessage alert={alertData} />}
       </form>
     </>
   )
+}
+
+FormCreateProject.propTypes = {
+  project: PropTypes.object,
+  edit: PropTypes.bool,
 }
 
 export default FormCreateProject

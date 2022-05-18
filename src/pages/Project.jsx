@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 
-import { timeAgo, prettyDate, axiosRequest } from '../helpers'
+import { axiosRequest } from '../helpers'
 import { useProjects } from '../hooks'
-import { AlertMessage, Spinner } from './components'
+import { AlertMessage, ProjectHero, Spinner } from './components'
 
 const Project = () => {
   const { id } = useParams()
@@ -17,7 +17,7 @@ const Project = () => {
     projectFromStore.length > 0 ? projectFromStore[0] : {}
   )
   useEffect(() => {
-    const getAllProjects = async (id) => {
+    const getProject = async (id) => {
       const [result, error] = await axiosRequest({
         url: `/projects/${id}`,
         method: 'GET',
@@ -25,11 +25,11 @@ const Project = () => {
       if (error) {
         setProjectError(true)
       } else {
-        setProject(result.data.project)
+        setProject(result.data.project.project)
       }
     }
     if (!project || Object.keys(project).length <= 0) {
-      getAllProjects(id)
+      getProject(id)
     }
     setLoading(false)
   }, [])
@@ -43,19 +43,32 @@ const Project = () => {
         <Spinner />
       ) : (
         <>
-          <div className="p-4 bg-white rounded-lg shadow-m mb-2">
-            <p>Project #{id}</p>
-            <p>
-              Created{' '}
-              {timeAgo(new Date(project.createdAt).getTime() || 0, 'en')}
-            </p>
-            <p>
-              Date of creation:{' '}
-              {prettyDate(new Date(project.createdAt).getTime() || 0)}
-            </p>
-          </div>
-          <div>
+          <ProjectHero project={project} />
+          <div className="flex justify-between">
             <h2 className="font-black text-4xl">{project.name}</h2>
+            <div className="flex items-center gap-2 text-gray-400 hover:text-black">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                />
+              </svg>
+              <Link
+                className="uppercase font-bold"
+                to={`/projects/edit/${id}`}
+                title={`Edit project #${id}`}
+              >
+                edit
+              </Link>
+            </div>
           </div>
         </>
       )}

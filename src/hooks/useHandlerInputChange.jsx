@@ -13,7 +13,7 @@ const useHandlerInputChange = (initialState) => {
     })
   }
   const reset = () => setState(initialState)
-  return [state, handleChange, reset]
+  return [state, handleChange, reset, setState]
 }
 
 export default useHandlerInputChange
