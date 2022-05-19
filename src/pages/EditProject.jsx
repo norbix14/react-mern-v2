@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { axiosRequest } from '../helpers'
+import { axiosRequest, isEmptyObject } from '../helpers'
 import { useProjects } from '../hooks'
 import {
   AlertMessage,
@@ -55,7 +55,7 @@ const EditProject = () => {
         setProject(result.data.project.project)
       }
     }
-    if (!project || Object.keys(project).length <= 0) {
+    if (!project || isEmptyObject(project)) {
       getProject(id)
     }
     setLoading(false)

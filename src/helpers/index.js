@@ -6,6 +6,7 @@ import isValidValue from './isValidValue'
 import isAnyEmptyValue from './isAnyEmptyValue'
 import isValidValueLength from './isValidValueLength'
 import isValidEmail from './isValidEmail'
+import isEmptyObject from './isEmptyObject'
 
 export {
   axiosRequest,
@@ -16,4 +17,5 @@ export {
   isAnyEmptyValue,
   isValidValueLength,
   isValidEmail,
+  isEmptyObject,
 }

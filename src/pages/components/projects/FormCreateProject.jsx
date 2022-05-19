@@ -8,7 +8,7 @@ import AlertMessage from '../AlertMessage'
 
 import { useHandlerInputChange, useProjects } from '../../../hooks'
 
-import { axiosRequest, isAnyEmptyValue } from '../../../helpers'
+import { axiosRequest, isAnyEmptyValue, isEmptyObject } from '../../../helpers'
 
 const FormCreateProject = ({ project = {}, edit = false }) => {
   const emptyState = {
@@ -17,10 +17,9 @@ const FormCreateProject = ({ project = {}, edit = false }) => {
     timeline: '',
     client: '',
   }
-  const initialStateForm =
-    Object.keys(project).length > 0
-      ? { ...project, timeline: project.timeline.split('T')[0] }
-      : emptyState
+  const initialStateForm = !isEmptyObject(project)
+    ? { ...project, timeline: project.timeline.split('T')[0] }
+    : emptyState
   const initialStateAlert = {
     error: false,
     message: '',
