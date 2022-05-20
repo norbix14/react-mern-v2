@@ -4,10 +4,10 @@ const AlertMessage = ({ alert }) => {
   return (
     <div
       className={`text-center my-10 p-3 
-				rounded-xl text-gray-600 uppercase 
+				rounded-xl text-white uppercase 
 				font-bold text-sm
 				bg-gradient-to-br
-				${alert.error ? 'from-red-400 to-red-600' : 'from-sky-400 to sky-600'}
+				${alert.error ? 'from-red-400 to-red-600' : 'from-sky-400 to-sky-600'}
 			`}
     >
       {alert.message}
