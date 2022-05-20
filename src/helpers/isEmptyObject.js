@@ -1,17 +1,17 @@
 /**
  * Verify if the provided object is valid and is empty.
- * 
+ *
  * @param {object} obj - Object to check.
- * 
+ *
  * @example
  * const obj = {}
- * if (isEmpty(obj)) {
+ * if (isEmptyObject(obj)) {
  *  console.log('Object is empty')
  * } else {
  *  console.log('Object is not empty')
  * }
  * // Object is empty
- * 
+ *
  * @returns {boolean} true if the object is empty, false otherwise.
  */
 const isEmptyObject = (obj) => {
@@ -21,7 +21,7 @@ const isEmptyObject = (obj) => {
     }
     return false
   } else {
-    throw new Error("Provide a valid object")
+    throw new Error('Provide a valid object')
   }
 }
 
