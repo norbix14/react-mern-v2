@@ -2,12 +2,13 @@ import { useEffect, useMemo, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 
 import { axiosRequest, isEmptyObject } from '../helpers'
-import { useProjects } from '../hooks'
+import { useProjects, useModals } from '../hooks'
 import { AlertMessage, ProjectHero, Spinner, ModalTaskForm } from './components'
 
 const Project = () => {
   const { id } = useParams()
   const { projects } = useProjects()
+  const { handleModalOpen } = useModals()
   const [loading, setLoading] = useState(true)
   const [projectError, setProjectError] = useState(false)
   const projectFromStore = useMemo(() => {
@@ -16,10 +17,6 @@ const Project = () => {
   const [project, setProject] = useState(
     projectFromStore.length > 0 ? projectFromStore[0] : {}
   )
-  const [modal, setModal] = useState(false)
-
-  const handleTaskClick = () => setModal(true)
-
   useEffect(() => {
     const getProject = async (id) => {
       const [result, error] = await axiosRequest({
@@ -82,7 +79,7 @@ const Project = () => {
               text-center mt-5 flex gap-2 items-center justify-center
             "
             title={`Add task to project #${id}`}
-            onClick={handleTaskClick}
+            onClick={() => handleModalOpen({ type: 'modal_task_add' })}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -98,7 +95,7 @@ const Project = () => {
             </svg>
             add task
           </button>
-          <ModalTaskForm modal={modal} setModal={setModal} />
+          <ModalTaskForm />
         </>
       )}
     </>

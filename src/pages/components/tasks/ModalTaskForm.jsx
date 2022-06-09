@@ -1,13 +1,18 @@
-import { Fragment, useState, useEffect } from 'react'
+import { Fragment } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 
-const ModalTaskForm = ({ modal, setModal, edit = false }) => {
+import { useModals } from '../../../hooks'
+
+import TaskForm from './TaskForm'
+
+const ModalTaskForm = () => {
+  const { modalTaskAdd, handleModalOpen } = useModals()
   return (
-    <Transition.Root show={modal} as={Fragment}>
+    <Transition.Root show={modalTaskAdd} as={Fragment}>
       <Dialog
         as="div"
         className="fixed z-10 inset-0 overflow-y-auto"
-        onClose={() => setModal(false)}
+        onClose={() => handleModalOpen({ type: 'modal_task_add' })}
       >
         <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
           <Transition.Child
@@ -43,7 +48,7 @@ const ModalTaskForm = ({ modal, setModal, edit = false }) => {
                   type="button"
                   className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                   title="Close"
-                  onClick={() => setModal(false)}
+                  onClick={() => handleModalOpen({ type: 'modal_task_add' })}
                 >
                   <span className="sr-only">Close</span>
                   <svg
@@ -65,7 +70,10 @@ const ModalTaskForm = ({ modal, setModal, edit = false }) => {
                   <Dialog.Title
                     as="h3"
                     className="text-lg leading-6 font-bold text-gray-900"
-                  ></Dialog.Title>
+                  >
+                    add task
+                  </Dialog.Title>
+                  <TaskForm />
                 </div>
               </div>
             </div>

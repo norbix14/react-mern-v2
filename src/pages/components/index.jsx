@@ -12,14 +12,14 @@ import ProjectHero from './projects/ProjectHero'
 import ModalTaskForm from './tasks/ModalTaskForm'
 
 export {
-	AlertMessage,
-	FormCreateProject,
-	Input,
-	InputSubmit,
-	ModalTaskForm,
-	ProjectHero,
-	ProjectPreview,
-	Spinner,
-	SweetAlert,
-	Textarea,
+  AlertMessage,
+  FormCreateProject,
+  Input,
+  InputSubmit,
+  ModalTaskForm,
+  ProjectHero,
+  ProjectPreview,
+  Spinner,
+  SweetAlert,
+  Textarea,
 }
