@@ -9,11 +9,14 @@ import FormCreateProject from './projects/FormCreateProject'
 import ProjectPreview from './projects/ProjectPreview'
 import ProjectHero from './projects/ProjectHero'
 
+import ModalTaskForm from './tasks/ModalTaskForm'
+
 export {
 	AlertMessage,
 	FormCreateProject,
 	Input,
 	InputSubmit,
+	ModalTaskForm,
 	ProjectHero,
 	ProjectPreview,
 	Spinner,
