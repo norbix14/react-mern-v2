@@ -71,7 +71,7 @@ const ModalTaskForm = () => {
                     as="h3"
                     className="text-lg leading-6 font-bold text-gray-900"
                   >
-                    add task
+                    Add task
                   </Dialog.Title>
                   <TaskForm />
                 </div>
