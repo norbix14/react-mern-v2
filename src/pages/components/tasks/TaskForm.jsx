@@ -1,21 +1,35 @@
 import PropTypes from 'prop-types'
 import { useEffect, useMemo, useState } from 'react'
+import { useParams } from 'react-router-dom'
 
-import { useHandlerInputChange } from '../../../hooks'
+import AlertMessage from '../AlertMessage'
 import Input from '../Input'
 import InputSubmit from '../InputSubmit'
-import Textarea from '../Textarea'
 import Select from '../Select'
+import Textarea from '../Textarea'
+
+import { axiosRequest, isAnyEmptyValue } from '../../../helpers'
+import { useHandlerInputChange, useTasks } from '../../../hooks'
+
+let alertTimeout
 
 const TaskForm = ({ task = {}, edit = false }) => {
-  const initialState = {
+  const initialStateTask = {
     name: '',
     description: '',
     priority: '',
   }
-  const [values, handleChange] = useHandlerInputChange(
-    edit ? task : initialState
+  const initialStateAlert = {
+    error: false,
+    message: '',
+  }
+  const { id } = useParams()
+  const [values, handleChange, reset] = useHandlerInputChange(
+    edit ? task : initialStateTask
   )
+  const [alertData, setAlertData] = useState(initialStateAlert)
+  const [btnDisabled, setBtnDisabled] = useState(false)
+  const [taskCreated, setTaskCreated] = useState(false)
   const inputsText = useMemo(() => {
     return [
       {
@@ -50,10 +64,53 @@ const TaskForm = ({ task = {}, edit = false }) => {
       },
     ]
   }, [])
-  const handleSubmit = (e) => {
+  const { setTasks } = useTasks()
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log(values)
+    setBtnDisabled(true)
+    try {
+      if (isAnyEmptyValue(values)) {
+        throw new Error('All fields are required')
+      }
+      const [result, error] = await axiosRequest({
+        url: edit ? `/tasks/update/${values._id}` : '/tasks/create',
+        method: edit ? 'PUT' : 'POST',
+        data: {
+          ...values,
+          project: id,
+        },
+      })
+      if (error) {
+        throw new Error(error.response.data.msg)
+      } else {
+        const {
+          data: { msg, task },
+        } = result
+        reset()
+        setAlertData({
+          error: false,
+          message: msg,
+        })
+        setTaskCreated(true)
+        setTasks((prev) => {
+          return [...prev, task]
+        })
+        alertTimeout = setTimeout(() => setTaskCreated(false), 3000)
+      }
+    } catch (error) {
+      setAlertData({
+        error: true,
+        message: error.message || 'Something went wrong',
+      })
+    } finally {
+      setBtnDisabled(false)
+    }
   }
+  useEffect(() => {
+    return () => {
+      clearTimeout(alertTimeout)
+    }
+  }, [])
   return (
     <>
       {/* <h2>{edit ? 'Edit task' : 'Add task'}</h2> */}
@@ -87,8 +144,13 @@ const TaskForm = ({ task = {}, edit = false }) => {
           value={values.priority}
           options={PRIORITIES}
         />
-        <InputSubmit value="Add task" disabled={false} />
+        <InputSubmit
+          value={edit ? 'update' : 'create'}
+          disabled={btnDisabled}
+        />
       </form>
+      {taskCreated && <AlertMessage alert={alertData} />}
+      {alertData.error && <AlertMessage alert={alertData} />}
     </>
   )
 }

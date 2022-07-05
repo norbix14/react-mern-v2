@@ -26,21 +26,26 @@ function App() {
       <AuthProvider>
         <ModalProvider>
           <ProjectsProvider>
-            <Routes>
-              <Route path="/" element={<Auth />}>
-                <Route index element={<Login />} />
-                <Route path="register" element={<Register />} />
-                <Route path="forgotpassword" element={<ForgotPassword />} />
-                <Route path="forgotpassword/:token" element={<NewPassword />} />
-                <Route path="confirm/:id" element={<AccountConfirmation />} />
-              </Route>
-              <Route path="/projects" element={<RouteProtected />}>
-                <Route index element={<Projects />} />
-                <Route path=":id" element={<Project />} />
-                <Route path="create" element={<CreateProject />} />
-                <Route path="edit/:id" element={<EditProject />} />
-              </Route>
-            </Routes>
+            <TasksProvider>
+              <Routes>
+                <Route path="/" element={<Auth />}>
+                  <Route index element={<Login />} />
+                  <Route path="register" element={<Register />} />
+                  <Route path="forgotpassword" element={<ForgotPassword />} />
+                  <Route
+                    path="forgotpassword/:token"
+                    element={<NewPassword />}
+                  />
+                  <Route path="confirm/:id" element={<AccountConfirmation />} />
+                </Route>
+                <Route path="/projects" element={<RouteProtected />}>
+                  <Route index element={<Projects />} />
+                  <Route path=":id" element={<Project />} />
+                  <Route path="create" element={<CreateProject />} />
+                  <Route path="edit/:id" element={<EditProject />} />
+                </Route>
+              </Routes>
+            </TasksProvider>
           </ProjectsProvider>
         </ModalProvider>
       </AuthProvider>

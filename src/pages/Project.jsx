@@ -2,13 +2,14 @@ import { useEffect, useMemo, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 
 import { axiosRequest, isEmptyObject } from '../helpers'
-import { useProjects, useModals } from '../hooks'
+import { useProjects, useModals, useTasks } from '../hooks'
 import { AlertMessage, ProjectHero, Spinner, ModalTaskForm } from './components'
 
 const Project = () => {
   const { id } = useParams()
   const { projects } = useProjects()
   const { handleModalOpen } = useModals()
+  const { tasks, setTasks } = useTasks()
   const [loading, setLoading] = useState(true)
   const [projectError, setProjectError] = useState(false)
   const projectFromStore = useMemo(() => {
@@ -96,6 +97,7 @@ const Project = () => {
             add task
           </button>
           <ModalTaskForm />
+          {/* map tasks */}
         </>
       )}
     </>
