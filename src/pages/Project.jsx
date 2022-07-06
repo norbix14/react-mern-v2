@@ -30,9 +30,8 @@ const Project = () => {
         setProject(result.data.project.project)
       }
     }
-    if (!project || isEmptyObject(project)) {
-      getProject(id)
-    }
+    //if (!project || isEmptyObject(project)) {}
+    getProject(id)
     setLoading(false)
   }, [])
   return (

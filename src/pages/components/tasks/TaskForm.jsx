@@ -12,17 +12,18 @@ import { axiosRequest, isAnyEmptyValue } from '../../../helpers'
 import { useHandlerInputChange, useTasks } from '../../../hooks'
 
 let alertTimeout
+const initialStateTask = {
+  name: '',
+  description: '',
+  timeline: '',
+  priority: '',
+}
+const initialStateAlert = {
+  error: false,
+  message: '',
+}
 
 const TaskForm = ({ task = {}, edit = false }) => {
-  const initialStateTask = {
-    name: '',
-    description: '',
-    priority: '',
-  }
-  const initialStateAlert = {
-    error: false,
-    message: '',
-  }
   const { id } = useParams()
   const [values, handleChange, reset] = useHandlerInputChange(
     edit ? task : initialStateTask
@@ -30,7 +31,7 @@ const TaskForm = ({ task = {}, edit = false }) => {
   const [alertData, setAlertData] = useState(initialStateAlert)
   const [btnDisabled, setBtnDisabled] = useState(false)
   const [taskCreated, setTaskCreated] = useState(false)
-  const inputsText = useMemo(() => {
+  const inputs = useMemo(() => {
     return [
       {
         id: 'name',
@@ -38,6 +39,14 @@ const TaskForm = ({ task = {}, edit = false }) => {
         label: 'Name',
         placeholder: 'Name',
         type: 'text',
+        required: true,
+      },
+      {
+        id: 'timeline',
+        key: 2,
+        label: 'Timeline',
+        placeholder: 'Timeline',
+        type: 'date',
         required: true,
       },
     ]
@@ -93,7 +102,13 @@ const TaskForm = ({ task = {}, edit = false }) => {
         })
         setTaskCreated(true)
         setTasks((prev) => {
-          return [...prev, task]
+          let res = []
+          if (edit) {
+            res = prev.map((t) => (t._id === task._id ? task : t))
+          } else {
+            res = [...prev, { ...task }]
+          }
+          return res
         })
         alertTimeout = setTimeout(() => setTaskCreated(false), 3000)
       }
@@ -115,7 +130,7 @@ const TaskForm = ({ task = {}, edit = false }) => {
     <>
       {/* <h2>{edit ? 'Edit task' : 'Add task'}</h2> */}
       <form className="my-10" onSubmit={handleSubmit}>
-        {inputsText.map(({ id, key, label, placeholder, type, required }) => (
+        {inputs.map(({ id, key, label, placeholder, type, required }) => (
           <Input
             key={key}
             id={id}
