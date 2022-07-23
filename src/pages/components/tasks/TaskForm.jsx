@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import AlertMessage from '../AlertMessage'
@@ -22,6 +22,44 @@ const initialStateAlert = {
   error: false,
   message: '',
 }
+const inputs = [
+  {
+    id: 'name',
+    key: 1,
+    label: 'Name',
+    placeholder: 'Name',
+    type: 'text',
+    required: true,
+  },
+  {
+    id: 'timeline',
+    key: 2,
+    label: 'Timeline',
+    placeholder: 'Timeline',
+    type: 'date',
+    required: true,
+  },
+]
+const PRIORITIES = [
+  {
+    id: 'low',
+    label: 'Low',
+    enum: 'Low',
+    key: 1,
+  },
+  {
+    id: 'medium',
+    label: 'Medium',
+    enum: 'Medium',
+    key: 2,
+  },
+  {
+    id: 'high',
+    label: 'High',
+    enum: 'High',
+    key: 3,
+  },
+]
 
 const TaskForm = ({ task = {}, edit = false }) => {
   const { id } = useParams()
@@ -31,48 +69,6 @@ const TaskForm = ({ task = {}, edit = false }) => {
   const [alertData, setAlertData] = useState(initialStateAlert)
   const [btnDisabled, setBtnDisabled] = useState(false)
   const [taskCreated, setTaskCreated] = useState(false)
-  const inputs = useMemo(() => {
-    return [
-      {
-        id: 'name',
-        key: 1,
-        label: 'Name',
-        placeholder: 'Name',
-        type: 'text',
-        required: true,
-      },
-      {
-        id: 'timeline',
-        key: 2,
-        label: 'Timeline',
-        placeholder: 'Timeline',
-        type: 'date',
-        required: true,
-      },
-    ]
-  }, [])
-  const PRIORITIES = useMemo(() => {
-    return [
-      {
-        id: 'low',
-        label: 'Low',
-        enum: 'Low',
-        key: 1,
-      },
-      {
-        id: 'medium',
-        label: 'Medium',
-        enum: 'Medium',
-        key: 2,
-      },
-      {
-        id: 'high',
-        label: 'High',
-        enum: 'High',
-        key: 3,
-      },
-    ]
-  }, [])
   const { setTasks } = useTasks()
   const handleSubmit = async (e) => {
     e.preventDefault()

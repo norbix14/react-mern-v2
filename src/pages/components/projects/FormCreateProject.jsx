@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import { useMemo, useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 
 import Input from '../Input'
 import InputSubmit from '../InputSubmit'
@@ -10,20 +10,45 @@ import { useHandlerInputChange, useProjects } from '../../../hooks'
 
 import { axiosRequest, isAnyEmptyValue, isEmptyObject } from '../../../helpers'
 
+let alertTimeout
+const inputs = [
+  {
+    id: 'name',
+    label: 'Name',
+    type: 'text',
+    placeholder: 'Project name',
+    key: 1,
+  },
+  {
+    id: 'timeline',
+    label: 'Timeline',
+    type: 'date',
+    placeholder: 'Project timeline',
+    key: 2,
+  },
+  {
+    id: 'client',
+    label: 'Client',
+    type: 'text',
+    placeholder: 'Project client',
+    key: 3,
+  },
+]
+const emptyState = {
+  name: '',
+  description: '',
+  timeline: '',
+  client: '',
+}
+const initialStateAlert = {
+  error: false,
+  message: '',
+}
+
 const FormCreateProject = ({ project = {}, edit = false }) => {
-  const emptyState = {
-    name: '',
-    description: '',
-    timeline: '',
-    client: '',
-  }
   const initialStateForm = !isEmptyObject(project)
     ? { ...project, timeline: project.timeline.split('T')[0] }
     : emptyState
-  const initialStateAlert = {
-    error: false,
-    message: '',
-  }
   const {
     0: values,
     1: handleChange,
@@ -33,37 +58,10 @@ const FormCreateProject = ({ project = {}, edit = false }) => {
   const [projectCreated, setProjectCreated] = useState(false)
   const [btnDisabled, setBtnDisabled] = useState(false)
   const { setProjects } = useProjects()
-  let alertTimeout
-  const inputs = useMemo(() => {
-    return [
-      {
-        id: 'name',
-        label: 'Name',
-        type: 'text',
-        placeholder: 'Project name',
-        key: 1,
-      },
-      {
-        id: 'timeline',
-        label: 'Timeline',
-        type: 'date',
-        placeholder: 'Project timeline',
-        key: 2,
-      },
-      {
-        id: 'client',
-        label: 'Client',
-        type: 'text',
-        placeholder: 'Project client',
-        key: 3,
-      },
-    ]
-  }, [])
   const handleSubmit = async (e) => {
     e.preventDefault()
     setBtnDisabled(true)
     try {
-      let url, method
       const fieldsToCheck = {
         name: values.name,
         description: values.description,
@@ -73,16 +71,9 @@ const FormCreateProject = ({ project = {}, edit = false }) => {
       if (isAnyEmptyValue(fieldsToCheck)) {
         throw new Error('All fields are required')
       }
-      if (edit) {
-        url = `/projects/update/${values._id}`
-        method = 'PUT'
-      } else {
-        url = '/projects/create'
-        method = 'POST'
-      }
       const [result, error] = await axiosRequest({
-        url,
-        method,
+        url: edit ? `/projects/update/${values._id}` : '/projects/create',
+        method: edit ? 'PUT' : 'POST',
         data: {
           ...values,
           timeline: new Date(values.timeline),

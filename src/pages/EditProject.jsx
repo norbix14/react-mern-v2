@@ -8,6 +8,7 @@ import {
   FormCreateProject,
   ProjectHero,
   Spinner,
+  SvgDelete,
   SweetAlert,
 } from './components'
 
@@ -18,9 +19,12 @@ const EditProject = () => {
   const [projectError, setProjectError] = useState(false)
   const [projectDeleted, setProjectDeleted] = useState(false)
   const projectFromStore = useMemo(() => {
-    return projects.filter((project) => project._id === id)
+    if (projects.length > 0) {
+      return projects.filter((project) => project._id === id)[0]
+    }
+    return {}
   }, [projects])
-  const [project, setProject] = useState({})
+  const [project, setProject] = useState(projectFromStore)
   const handleClickDelete = () => {
     SweetAlert.Delete({}).then(async (result) => {
       if (result.isConfirmed) {
@@ -41,10 +45,12 @@ const EditProject = () => {
     setLoading(false)
   }
   useEffect(() => {
-    setProject(projectFromStore.length > 0 ? projectFromStore[0] : {})
+    setProject(projectFromStore)
   }, [projects])
   useEffect(() => {
+    setLoading(false)
     const getProject = async (id) => {
+      setLoading(true)
       const [result, error] = await axiosRequest({
         url: `/projects/${id}`,
         method: 'GET',
@@ -52,13 +58,24 @@ const EditProject = () => {
       if (error) {
         setProjectError(true)
       } else {
-        setProject(result.data.project.project)
+        setProject(result.data.project)
+        setProjects((prev) => {
+          if (!prev || isEmptyObject(prev)) {
+            return [...prev, result.data.project]
+          }
+          return prev.map((p) => {
+            if (p._id === id) {
+              return result.data.project
+            }
+            return p
+          })
+        })
       }
+      setLoading(false)
     }
     if (!project || isEmptyObject(project)) {
       getProject(id)
     }
-    setLoading(false)
   }, [])
   return (
     <>
@@ -78,20 +95,7 @@ const EditProject = () => {
               <span className="text-gray-500">Edit</span> {project.name}
             </h2>
             <div className="flex items-center gap-2 text-red-400 hover:text-red-600">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                />
-              </svg>
+              <SvgDelete />
               <button
                 type="button"
                 className="uppercase font-bold"

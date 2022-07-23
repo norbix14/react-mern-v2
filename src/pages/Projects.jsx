@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { useProjects } from '../hooks'
+import { useProjects, useTasks } from '../hooks'
 
 import { axiosRequest } from '../helpers'
 
@@ -9,11 +9,8 @@ import { AlertMessage, ProjectPreview } from './components'
 const Projects = () => {
   const [projectError, setProjectError] = useState(false)
   const { projects, setProjects } = useProjects()
+  const { setTasks } = useTasks()
   useEffect(() => {
-    /*
-      TODO: optimizar llamado a la API.
-      * puede hacerse desde la API modificando el query.
-    */
     const getAllProjects = async () => {
       const [result, error] = await axiosRequest({
         url: '/projects/all',
@@ -25,9 +22,8 @@ const Projects = () => {
         setProjects(result.data.projects)
       }
     }
-    if (!projects || projects.length <= 0) {
-      getAllProjects()
-    }
+    setTasks([])
+    getAllProjects()
   }, [])
   return (
     <>
@@ -51,7 +47,6 @@ const Projects = () => {
           ))}
         </>
       )}
-      <div></div>
     </>
   )
 }

@@ -20,7 +20,7 @@ const Header = () => {
           id="search"
           placeholder="Search..."
         />
-        <div className="flex items-center gap-4">
+        <div className="flex items-center justify-between gap-4">
           <Link className="font-bold uppercase" to="/projects">
             Projects
           </Link>
