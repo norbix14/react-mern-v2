@@ -15,6 +15,7 @@ import ProjectHero from './projects/ProjectHero'
 
 import ModalTaskForm from './tasks/ModalTaskForm'
 import TaskPreview from './tasks/TaskPreview'
+import TaskPriorityPill from './tasks/TaskPriorityPill'
 
 export {
   AlertMessage,
@@ -32,5 +33,6 @@ export {
   SvgPlus,
   SweetAlert,
   TaskPreview,
+  TaskPriorityPill,
   Textarea,
 }

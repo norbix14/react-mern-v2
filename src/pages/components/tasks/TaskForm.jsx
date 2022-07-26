@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -8,8 +7,11 @@ import InputSubmit from '../InputSubmit'
 import Select from '../Select'
 import Textarea from '../Textarea'
 
+import SweetAlert from '../helpers/SweetAlert'
+
+import { useHandlerInputChange, useModals, useTasks } from '../../../hooks'
+
 import { axiosRequest, isAnyEmptyValue } from '../../../helpers'
-import { useHandlerInputChange, useTasks } from '../../../hooks'
 
 let alertTimeout
 const initialStateTask = {
@@ -61,15 +63,22 @@ const PRIORITIES = [
   },
 ]
 
-const TaskForm = ({ task = {}, edit = false }) => {
-  const { id } = useParams()
-  const [values, handleChange, reset] = useHandlerInputChange(
-    edit ? task : initialStateTask
-  )
+const TaskForm = () => {
   const [alertData, setAlertData] = useState(initialStateAlert)
   const [btnDisabled, setBtnDisabled] = useState(false)
   const [taskCreated, setTaskCreated] = useState(false)
-  const { setTasks } = useTasks()
+  const { id } = useParams()
+  const { modalType, handleModalOpen } = useModals()
+  const { editTask, setEditTask, setTasks } = useTasks()
+  const isEdit = modalType === 'edit'
+  const [values, handleChange, reset] = useHandlerInputChange(
+    isEdit
+      ? {
+          ...editTask,
+          timeline: editTask.timeline.split('T')[0],
+        }
+      : initialStateTask
+  )
   const handleSubmit = async (e) => {
     e.preventDefault()
     setBtnDisabled(true)
@@ -78,8 +87,8 @@ const TaskForm = ({ task = {}, edit = false }) => {
         throw new Error('All fields are required')
       }
       const [result, error] = await axiosRequest({
-        url: edit ? `/tasks/update/${values._id}` : '/tasks/create',
-        method: edit ? 'PUT' : 'POST',
+        url: isEdit ? `/tasks/update/${values._id}` : '/tasks/create',
+        method: isEdit ? 'PUT' : 'POST',
         data: {
           ...values,
           project: id,
@@ -98,14 +107,15 @@ const TaskForm = ({ task = {}, edit = false }) => {
         })
         setTaskCreated(true)
         setTasks((prev) => {
-          let res = []
-          if (edit) {
-            res = prev.map((t) => (t._id === task._id ? task : t))
-          } else {
-            res = [...prev, { ...task }]
-          }
-          return res
+          return isEdit
+            ? prev.map((t) => (t._id === task._id ? task : t))
+            : [...prev, { ...task }]
         })
+        if (isEdit) {
+          handleModalOpen('close')
+          setEditTask({})
+          SweetAlert.Toast({ title: msg })
+        }
         alertTimeout = setTimeout(() => setTaskCreated(false), 3000)
       }
     } catch (error) {
@@ -124,7 +134,7 @@ const TaskForm = ({ task = {}, edit = false }) => {
   }, [])
   return (
     <>
-      {/* <h2>{edit ? 'Edit task' : 'Add task'}</h2> */}
+      <h2>{isEdit ? 'Edit task' : 'Add task'}</h2>
       <form className="my-10" onSubmit={handleSubmit}>
         {inputs.map(({ id, key, label, placeholder, type, required }) => (
           <Input
@@ -156,7 +166,7 @@ const TaskForm = ({ task = {}, edit = false }) => {
           options={PRIORITIES}
         />
         <InputSubmit
-          value={edit ? 'update' : 'create'}
+          value={isEdit ? 'update' : 'create'}
           disabled={btnDisabled}
         />
       </form>
@@ -164,11 +174,6 @@ const TaskForm = ({ task = {}, edit = false }) => {
       {alertData.error && <AlertMessage alert={alertData} />}
     </>
   )
-}
-
-TaskForm.propTypes = {
-  task: PropTypes.object,
-  edit: PropTypes.bool,
 }
 
 export default TaskForm

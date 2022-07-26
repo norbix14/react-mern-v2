@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 
 import { useAuth, useSessionDestroyer } from '../hooks'
 
-const Session = (props) => {
+const Session = () => {
   const {
     authData: { session },
   } = useAuth()
@@ -36,7 +36,7 @@ const Session = (props) => {
           init: true,
         }
       })
-      if (minutes === 0 && seconds === 0) {
+      if ((minutes === 0 && seconds === 0) || (minutes < 0 && seconds < 0)) {
         // TODO:
         // *se podria agregar una alerta de sesion expirada
         // *se podria retrasar la destruccion de la sesion

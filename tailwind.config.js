@@ -1,12 +1,9 @@
 module.exports = {
-  content: [
-    "./index.html",
-    "./src/**/*.jsx"
-   ],
+  content: ['./index.html', './src/**/*.jsx'],
   theme: {
     extend: {
       keyframes: {
-        'spin': {
+        spin: {
           '0%': { transform: 'rotate(0deg)' },
           '100%': { transform: 'rotate(360deg)' },
         },

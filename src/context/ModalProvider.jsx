@@ -4,16 +4,24 @@ const ModalContext = createContext()
 
 const ModalProvider = ({ children }) => {
   const [modal, setModal] = useState(false)
-  const [modalTaskAdd, setModalTaskAdd] = useState(false)
+  const [modalType, setModalType] = useState('')
 
-  const handleModalOpen = ({ type = 'modal_default' }) => {
-    switch (type.toLowerCase()) {
-      case 'modal_task_add':
-        setModalTaskAdd(!modalTaskAdd)
-        break
-      case 'modal_default':
-      default:
+  const handleModalOpen = (type = 'default') => {
+    const typeLowercase = type.toLowerCase()
+    switch (typeLowercase) {
+      case 'add':
         setModal(!modal)
+        setModalType(typeLowercase)
+        break
+      case 'edit':
+        setModal(!modal)
+        setModalType(typeLowercase)
+        break
+      case 'close':
+      case 'default':
+      default:
+        setModal(false)
+        setModalType('')
     }
   }
 
@@ -22,7 +30,7 @@ const ModalProvider = ({ children }) => {
       value={{
         handleModalOpen,
         modal,
-        modalTaskAdd,
+        modalType,
       }}
     >
       {children}

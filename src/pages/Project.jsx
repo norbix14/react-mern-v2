@@ -82,7 +82,7 @@ const Project = () => {
               text-center mt-5 flex gap-2 items-center justify-center
             "
             title={`Add task to project #${id}`}
-            onClick={() => handleModalOpen({ type: 'modal_task_add' })}
+            onClick={() => handleModalOpen('add')}
           >
             <SvgPlus />
             add task
