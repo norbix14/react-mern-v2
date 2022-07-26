@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types'
 
+import ButtonTask from '../ButtonTask'
+
 import { prettyDate } from '../../../helpers'
 
 const TaskPreview = ({ task }) => {
@@ -23,8 +25,8 @@ const TaskPreview = ({ task }) => {
             <p className="mb-1 text-gray-600">Priority: </p>
             <p
               className={`
-                px-2 font-bold rounded-md text-white
-                bg-${priorityMap[priority]}
+                px-2 font-bold rounded-md text-white 
+                bg-${priorityMap[priority]} 
               `}
             >
               {priority}
@@ -32,21 +34,13 @@ const TaskPreview = ({ task }) => {
           </div>
         </div>
         <div className="flex gap-2">
-          <button className="bg-indigo-600 px-4 py-3 text-white uppercase font-bold text-sm rounded-lg">
-            edit
-          </button>
+          <ButtonTask className="bg-indigo-600">edit</ButtonTask>
           {status ? (
-            <button className="bg-sky-600 px-4 py-3 text-white uppercase font-bold text-sm rounded-lg">
-              complete
-            </button>
+            <ButtonTask className="bg-sky-600">complete</ButtonTask>
           ) : (
-            <button className="bg-gray-600 px-4 py-3 text-white uppercase font-bold text-sm rounded-lg">
-              incomplete
-            </button>
+            <ButtonTask className="bg-gray-600">incomplete</ButtonTask>
           )}
-          <button className="bg-red-600 px-4 py-3 text-white uppercase font-bold text-sm rounded-lg">
-            delete
-          </button>
+          <ButtonTask className="bg-red-600">delete</ButtonTask>
         </div>
       </div>
     </>

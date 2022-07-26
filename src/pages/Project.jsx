@@ -92,7 +92,9 @@ const Project = () => {
             {tasks.length > 0 ? (
               tasks.map((task) => <TaskPreview task={task} key={task._id} />)
             ) : (
-              <p className="text-center text-gray-500 my-5 p-10">No tasks yet</p>
+              <p className="text-center text-gray-500 my-5 p-10">
+                No tasks yet
+              </p>
             )}
           </div>
         </>

@@ -19,10 +19,9 @@ const EditProject = () => {
   const [projectError, setProjectError] = useState(false)
   const [projectDeleted, setProjectDeleted] = useState(false)
   const projectFromStore = useMemo(() => {
-    if (projects.length > 0) {
-      return projects.filter((project) => project._id === id)[0]
-    }
-    return {}
+    return projects.length > 0
+      ? projects.filter((project) => project._id === id)[0]
+      : {}
   }, [projects])
   const [project, setProject] = useState(projectFromStore)
   const handleClickDelete = () => {
