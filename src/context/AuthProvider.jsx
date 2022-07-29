@@ -8,7 +8,12 @@ const AuthContext = createContext()
 
 const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true)
-  const [authData, setAuthData] = useState({})
+  const [authData, setAuthData] = useState({
+    logged: false,
+    token: null,
+    user: {},
+    session: {},
+  })
   const memoizedStorage = useMemo(() => {
     return {
       token: JSON.parse(window.localStorage.getItem('token')),

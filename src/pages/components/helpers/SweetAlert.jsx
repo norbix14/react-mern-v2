@@ -90,8 +90,61 @@ const Delete = ({
   })
 }
 
+/**
+ * Show a modal for the expired session.
+ *
+ * @param {object} params - object.
+ * @param {string} params.title - title of the modal.
+ * @param {string} params.text - text for the modal.
+ *
+ * @example
+ * SweetAlert.Expire({})
+ * // shows an expiration modal
+ *
+ * @returns {Promise} a promise with the result of the user action.
+ *
+ */
+const Expire = ({ title = 'Expired', text = 'Expired' }) => {
+  return window.Swal.fire({
+    title,
+    text,
+    icon: 'warning',
+    allowEscapeKey: false,
+    showConfirmButton: false,
+    willClose: () => {},
+  })
+}
+
+/**
+ * Show a basic loader.
+ *
+ * @param {object} params - object.
+ * @param {string} params.title - title of the loader.
+ *
+ * @example
+ * SweetAlert.Loader({})
+ * // shows a modal with a loader
+ *
+ * @returns {Promise} a promise showing the loader.
+ */
+const Loader = ({ title = 'Processing...' }) => {
+  // TODO: implement loader
+  return window.Swal.fire({
+    title,
+    showConfirmButton: false,
+    //allowOutsideClick: false,
+    //allowEscapeKey: false,
+    didOpen: () => {
+      window.Swal.showLoading()
+    },
+    willClose: () => {},
+  })
+}
+
 export default {
+  Delete,
+  Expire,
+  Loader,
   Swal,
   Toast,
-  Delete,
 }

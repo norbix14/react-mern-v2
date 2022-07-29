@@ -100,23 +100,24 @@ const TaskForm = () => {
         const {
           data: { msg, task },
         } = result
-        reset()
-        setAlertData({
-          error: false,
-          message: msg,
-        })
-        setTaskCreated(true)
+        if (isEdit) {
+          SweetAlert.Toast({ title: msg })
+          handleModalOpen('close')
+          setEditTask({})
+        } else {
+          reset()
+          setAlertData({
+            error: false,
+            message: msg,
+          })
+          setTaskCreated(true)
+          alertTimeout = setTimeout(() => setTaskCreated(false), 3000)
+        }
         setTasks((prev) => {
           return isEdit
             ? prev.map((t) => (t._id === task._id ? task : t))
             : [...prev, { ...task }]
         })
-        if (isEdit) {
-          handleModalOpen('close')
-          setEditTask({})
-          SweetAlert.Toast({ title: msg })
-        }
-        alertTimeout = setTimeout(() => setTaskCreated(false), 3000)
       }
     } catch (error) {
       setAlertData({

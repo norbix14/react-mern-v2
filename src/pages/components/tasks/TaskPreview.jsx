@@ -12,14 +12,27 @@ import { axiosRequest, prettyDate } from '../../../helpers'
 
 const TaskPreview = ({ task }) => {
   const { handleModalOpen } = useModals()
-  const { setEditTask } = useTasks()
+  const { setEditTask, setTasks } = useTasks()
   const { _id, name, description, status, timeline, priority, project } = task
   const timelineDate = new Date(timeline).getTime() || 0
   const doAction = async (type) => {
     if (type === 'delete') {
       SweetAlert.Delete({}).then(async (result) => {
         if (result.isConfirmed) {
-          SweetAlert.Toast({ title: 'Task deleted' })
+          SweetAlert.Toast({ title: 'Deleting...' })
+          const [result, error] = await axiosRequest({
+            method: 'DELETE',
+            url: `/tasks/delete/${_id}`,
+          })
+          if (error) {
+            SweetAlert.Toast({
+              icon: 'error',
+              title: error.response.data.msg,
+            })
+          } else {
+            setTasks((prev) => prev.filter((t) => t._id !== _id))
+            SweetAlert.Toast({ title: result.data.msg })
+          }
         }
       })
     }
@@ -66,6 +79,7 @@ const TaskPreview = ({ task }) => {
             <ButtonTask
               className="bg-sky-600"
               onClick={() => handleActionType('complete')}
+              title={`Set task #${_id} as incomplete`}
             >
               complete
             </ButtonTask>
@@ -73,6 +87,7 @@ const TaskPreview = ({ task }) => {
             <ButtonTask
               className="bg-gray-600"
               onClick={() => handleActionType('incomplete')}
+              title={`Set task #${_id} as complete`}
             >
               incomplete
             </ButtonTask>

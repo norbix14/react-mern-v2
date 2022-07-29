@@ -2,6 +2,10 @@ import { useEffect, useState } from 'react'
 
 import { useAuth, useSessionDestroyer } from '../hooks'
 
+//import { SweetAlert } from '../pages/components'
+
+let timerInterval
+
 const Session = () => {
   const {
     authData: { session },
@@ -13,7 +17,7 @@ const Session = () => {
     init: false,
   })
   const [bgTimer, setBgTimer] = useState('')
-  let timerInterval
+  //const [sessionExpired, setSessionExpired] = useState(false)
   useEffect(() => {
     timerInterval = setInterval(() => {
       let minutes, seconds
@@ -37,18 +41,28 @@ const Session = () => {
         }
       })
       if ((minutes === 0 && seconds === 0) || (minutes < 0 && seconds < 0)) {
-        // TODO:
-        // *se podria agregar una alerta de sesion expirada
-        // *se podria retrasar la destruccion de la sesion
-        //console.log('sesion expirada')
-        destroySession()
+        //setSessionExpired(true)
         clearInterval(timerInterval)
+        destroySession()
       }
     }, 1000)
     return () => {
       clearInterval(timerInterval)
     }
   }, [timer])
+  // TODO: improve this session expiration alert
+  /*
+  if (sessionExpired) {
+    SweetAlert.Expire({
+      title: 'Session expired',
+      text: 'Your session has expired',
+    }).then((res) => {
+      if (res.isDismissed) {
+        destroySession()
+      }
+    })
+  }
+  */
   return (
     <>
       {timer.init && (
