@@ -105,12 +105,17 @@ const Delete = ({
  *
  */
 const Expire = ({ title = 'Expired', text = 'Expired' }) => {
+  // TODO: enable session extension option when is ready
   return window.Swal.fire({
     title,
     text,
     icon: 'warning',
     allowEscapeKey: false,
     showConfirmButton: false,
+    //showConfirmButton: true,
+    //confirmButtonText: 'Extend session',
+    showDenyButton: true,
+    denyButtonText: 'Logout',
     willClose: () => {},
   })
 }

@@ -2,22 +2,25 @@ import { useEffect, useState } from 'react'
 
 import { useAuth, useSessionDestroyer } from '../hooks'
 
-//import { SweetAlert } from '../pages/components'
+import { isValidSessionTime } from '../helpers'
+
+import { SweetAlert } from '../pages/components'
 
 let timerInterval
+const initialStateTimer = {
+  minutes: 60,
+  seconds: 0,
+  init: false,
+}
 
 const Session = () => {
   const {
     authData: { session },
   } = useAuth()
   const [destroySession] = useSessionDestroyer()
-  const [timer, setTimer] = useState({
-    minutes: 60,
-    seconds: 0,
-    init: false,
-  })
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const [timer, setTimer] = useState(initialStateTimer)
   const [bgTimer, setBgTimer] = useState('')
-  //const [sessionExpired, setSessionExpired] = useState(false)
   useEffect(() => {
     timerInterval = setInterval(() => {
       let minutes, seconds
@@ -40,29 +43,31 @@ const Session = () => {
           init: true,
         }
       })
-      if ((minutes === 0 && seconds === 0) || (minutes < 0 && seconds < 0)) {
-        //setSessionExpired(true)
+      if (!isValidSessionTime(minutes, seconds)) {
+        setSessionExpired(true)
         clearInterval(timerInterval)
-        destroySession()
       }
     }, 1000)
     return () => {
       clearInterval(timerInterval)
     }
   }, [timer])
-  // TODO: improve this session expiration alert
-  /*
-  if (sessionExpired) {
-    SweetAlert.Expire({
-      title: 'Session expired',
-      text: 'Your session has expired',
-    }).then((res) => {
-      if (res.isDismissed) {
-        destroySession()
-      }
-    })
-  }
-  */
+  useEffect(() => {
+    if (sessionExpired) {
+      SweetAlert.Expire({
+        title: 'Session expired',
+        text: 'Your session has expired',
+      }).then((res) => {
+        if (res.isConfirmed) {
+          // TODO: implement session extension
+          //console.log('Extend session')
+        }
+        if (res.isDenied || res.isDismissed) {
+          destroySession()
+        }
+      })
+    }
+  }, [sessionExpired])
   return (
     <>
       {timer.init && (

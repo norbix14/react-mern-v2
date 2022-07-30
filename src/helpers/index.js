@@ -6,6 +6,7 @@ import isValidValue from './isValidValue'
 import isAnyEmptyValue from './isAnyEmptyValue'
 import isValidValueLength from './isValidValueLength'
 import isValidEmail from './isValidEmail'
+import isValidSessionTime from './isValidSessionTime'
 import isEmptyObject from './isEmptyObject'
 
 export {
@@ -17,5 +18,6 @@ export {
   isAnyEmptyValue,
   isValidValueLength,
   isValidEmail,
+  isValidSessionTime,
   isEmptyObject,
 }

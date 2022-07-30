@@ -6,6 +6,11 @@ import { useState } from 'react'
  * @param {string} key - key to be stored in `localStorage`.
  * @param {any} initialValue - initial value for the `key`.
  *
+ * @example
+ * const [value, setValue] = useLocalStorage('key', 'initialValue')
+ * const { 0: value, 1: setValue } = useLocalStorage('key', 'initialValue')
+ *
+ * @returns {[any, function]} a tuple with the current value and a function to set the value.
  */
 export default function useLocalStorage(key, initialValue) {
   // Pass initial state function to useState so logic is only executed once

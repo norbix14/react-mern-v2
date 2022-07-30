@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 
 import { Input, InputSubmit, AlertMessage } from './components'
@@ -12,17 +12,34 @@ import {
   isValidEmail,
 } from '../helpers'
 
+const initialStateForm = {
+  email: '',
+  password: '',
+}
+const initialStateAlert = {
+  error: false,
+  message: '',
+}
+const inputs = [
+  {
+    id: 'email',
+    label: 'Email',
+    type: 'email',
+    placeholder: 'Email',
+    key: 1,
+  },
+  {
+    id: 'password',
+    label: 'Password',
+    type: 'password',
+    placeholder: 'Password',
+    key: 2,
+  },
+]
+const timer = 3000
+let logNowTimer
+
 const Login = () => {
-  const initialStateForm = {
-    email: '',
-    password: '',
-  }
-  const initialStateAlert = {
-    error: false,
-    message: '',
-  }
-  const timer = 3000
-  let logNowTimer
   const [alertData, setAlertData] = useState(initialStateAlert)
   const [btnDisabled, setBtnDisabled] = useState(false)
   const [userLogged, setUserLogged] = useState(false)
@@ -32,24 +49,6 @@ const Login = () => {
   const { 1: setTokenLocalStorage } = useLocalStorage('token', '')
   const { 1: setSessionLocalStorage } = useLocalStorage('session', {})
   const [values, handleChange, reset] = useHandlerInputChange(initialStateForm)
-  const inputs = useMemo(() => {
-    return [
-      {
-        id: 'email',
-        label: 'Email',
-        type: 'email',
-        placeholder: 'Email',
-        key: 1,
-      },
-      {
-        id: 'password',
-        label: 'Password',
-        type: 'password',
-        placeholder: 'Password',
-        key: 2,
-      },
-    ]
-  }, [])
   const handleSubmit = async (e) => {
     e.preventDefault()
     setBtnDisabled(true)
