@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 
-import { useAuth, useSessionDestroyer } from '../hooks'
+import { useAuth, useLocalStorage, useSessionDestroyer } from '../hooks'
 
-import { isValidSessionTime } from '../helpers'
+import { axiosRequest, isValidSessionTime } from '../helpers'
 
 import { SweetAlert } from '../pages/components'
 
@@ -15,12 +15,16 @@ const initialStateTimer = {
 
 const Session = () => {
   const {
-    authData: { session },
+    authData: { session, user },
+    setAuthData,
   } = useAuth()
-  const [destroySession] = useSessionDestroyer()
   const [sessionExpired, setSessionExpired] = useState(false)
   const [timer, setTimer] = useState(initialStateTimer)
   const [bgTimer, setBgTimer] = useState('')
+  const [destroySession] = useSessionDestroyer()
+  const { 1: setUserLocalStorage } = useLocalStorage('user', {})
+  const { 1: setTokenLocalStorage } = useLocalStorage('token', '')
+  const { 1: setSessionLocalStorage } = useLocalStorage('session', {})
   useEffect(() => {
     timerInterval = setInterval(() => {
       let minutes, seconds
@@ -51,16 +55,50 @@ const Session = () => {
     return () => {
       clearInterval(timerInterval)
     }
-  }, [timer])
+  }, [timer, session])
   useEffect(() => {
     if (sessionExpired) {
       SweetAlert.Expire({
         title: 'Session expired',
         text: 'Your session has expired',
-      }).then((res) => {
+      }).then(async (res) => {
         if (res.isConfirmed) {
-          // TODO: implement session extension
-          //console.log('Extend session')
+          setSessionExpired(false)
+          SweetAlert.Toast({ title: 'Extending session...', position: 'top' })
+          const [result, error] = await axiosRequest({
+            method: 'POST',
+            url: '/users/session/extend',
+            data: {
+              email: user.email,
+            },
+          })
+          if (error) {
+            setSessionExpired(true)
+            SweetAlert.Toast({
+              title: error.response.data.msg,
+              icon: 'error',
+            })
+          } else {
+            const { data } = result
+            const { token, user, session, msg } = data
+            const userData = {
+              _id: user._id,
+              name: user.name,
+              email: user.email,
+              createdAt: user.createdAt,
+              updatedAt: user.updatedAt,
+            }
+            SweetAlert.Toast({ title: msg })
+            setTokenLocalStorage(token)
+            setUserLocalStorage(userData)
+            setSessionLocalStorage(session)
+            setAuthData({
+              logged: true,
+              token,
+              user: userData,
+              session,
+            })
+          }
         }
         if (res.isDenied || res.isDismissed) {
           destroySession()

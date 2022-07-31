@@ -99,21 +99,19 @@ const Delete = ({
  *
  * @example
  * SweetAlert.Expire({})
- * // shows an expiration modal
+ * // shows an expiration modal with two options: extend session or logout
  *
  * @returns {Promise} a promise with the result of the user action.
  *
  */
 const Expire = ({ title = 'Expired', text = 'Expired' }) => {
-  // TODO: enable session extension option when is ready
   return window.Swal.fire({
     title,
     text,
     icon: 'warning',
     allowEscapeKey: false,
-    showConfirmButton: false,
-    //showConfirmButton: true,
-    //confirmButtonText: 'Extend session',
+    showConfirmButton: true,
+    confirmButtonText: 'Extend session',
     showDenyButton: true,
     denyButtonText: 'Logout',
     willClose: () => {},
